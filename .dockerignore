@@ -1,0 +1,18 @@
+# Mengabaikan folder dependensi lokal (karena akan di-install ulang di dalam Docker)
+node_modules
+vendor
+
+# Mengabaikan riwayat Git dan konfigurasi lokal
+.git
+.gitignore
+.env
+
+# Mengabaikan file log dan cache Laravel lokal agar tidak mengotori container
+storage/framework/cache/data/*
+storage/framework/sessions/*
+storage/framework/views/*
+storage/logs/*
+
+# Mengabaikan konfigurasi Docker itu sendiri (opsional)
+Dockerfile
+.dockerignore
