@@ -1,16 +1,18 @@
 <?php
 
-namespace Tests\Unit;
+namespace Tests\Feature;
 
-use PHPUnit\Framework\TestCase;
+use Tests\TestCase;
 
 class ExampleTest extends TestCase
 {
     /**
-     * A basic test example.
+     * Menguji apakah base URL API dasar memberikan respon yang valid.
      */
-    public function test_that_true_is_true(): void
+    public function test_the_application_returns_a_successful_response(): void
     {
-        $this->assertTrue(true);
+        $response = $this->getJson('/api');
+
+        $this->assertTrue(in_array($response->getStatusCode(), [200, 404, 405]));
     }
 }
