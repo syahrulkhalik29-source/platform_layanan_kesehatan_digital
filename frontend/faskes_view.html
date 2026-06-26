@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pencarian Faskes - Portal Kesehatan Masyarakat</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body
+    class="bg-gradient-to-b from-teal-50 via-slate-50 to-blue-50 font-sans min-h-screen"
+  >
+    <nav
+      class="bg-gradient-to-r from-teal-600 to-cyan-700 shadow-md sticky top-0 z-50"
+    >
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+          <div class="flex items-center space-x-8">
+            <div
+              class="bg-white p-2 rounded-lg shadow-sm font-bold text-teal-600 tracking-wider"
+            >
+              BINARY
+            </div>
+            <div class="hidden sm:flex space-x-6 text-sm font-medium">
+              <a
+                href="dashboard.html"
+                class="text-teal-100 hover:text-white transition"
+                >Dashboard</a
+              >
+              <a
+                href="faskes_view.html"
+                class="text-white font-bold border-b-2 border-white pb-1"
+                >Pencarian Faskes</a
+              >
+              <a
+                href="jadwal_dokter_view.html"
+                class="text-teal-100 hover:text-white transition"
+                >Reservasi Jadwal</a
+              >
+              <a
+                href="rekam_medis_view.html"
+                class="text-teal-100 hover:text-white transition"
+                >Rekam Medis</a
+              >
+              <a
+                href="resep_obat_view.html"
+                class="text-teal-100 hover:text-white transition"
+                >Resep Obat</a
+              >
+            </div>
+          </div>
+          <div class="flex items-center space-x-4">
+            <span id="user-display-nav" class="text-white text-sm font-semibold"
+              >Memuat...</span
+            >
+            <button
+              id="logoutBtn"
+              class="px-3 py-1.5 bg-teal-700 bg-opacity-50 text-teal-100 hover:text-white hover:bg-opacity-80 rounded-lg text-xs font-bold transition"
+            >
+              Keluar
+            </button>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    <main class="py-12">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="mb-8">
+          <h2 class="text-2xl font-extrabold text-slate-800">
+            Integrasi Data Fasilitas Kesehatan (Faskes)
+          </h2>
+          <p class="text-sm text-slate-600">
+            Menampilkan data live rujukan klinik dan rumah sakit terdekat
+            langsung via koneksi Third-Party API.
+          </p>
+        </div>
+
+        <div
+          class="bg-white shadow-sm rounded-xl overflow-hidden border border-slate-100"
+        >
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr
+                  class="bg-slate-50 border-b border-slate-100 text-slate-700 font-semibold text-sm"
+                >
+                  <th class="p-4">No</th>
+                  <th class="p-4">Nama Fasilitas Kesehatan</th>
+                  <th class="p-4">Kategori Jaringan</th>
+                  <th class="p-4">Alamat Operasional</th>
+                  <th class="p-4 text-center">Status Jaringan API</th>
+                </tr>
+              </thead>
+              <tbody
+                id="faskes-table-body"
+                class="text-slate-600 text-sm divide-y divide-slate-100"
+              >
+                <tr>
+                  <td colspan="5" class="p-8 text-center text-slate-400">
+                    Menghubungkan ke server Third-Party API...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script>
+      const token = localStorage.getItem("auth_token");
+      const userName = localStorage.getItem("user_name");
+
+      if (!token) {
+        window.location.href = "login.html";
+      }
+      document.getElementById("user-display-nav").innerText = userName;
+
+      // Ambil data faskes pihak ketiga via Backend Gateway
+      async function fetchFaskes() {
+        try {
+          const response = await fetch("https://platformlayanankesehatandigital-production.up.railway.app/api/faskes", {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              Accept: "application/json",
+            },
+          });
+
+          const result = await response.json();
+          const tableBody = document.getElementById("faskes-table-body");
+          tableBody.innerHTML = "";
+
+          if (response.ok && result.data.length > 0) {
+            result.data.forEach((row, index) => {
+              tableBody.innerHTML += `
+                            <tr class="hover:bg-slate-50/80 transition">
+                                <td class="p-4 font-medium">${index + 1}</td>
+                                <td class="p-4 font-bold text-slate-800">${row.nama_faskes}</td>
+                                <td class="p-4"><span class="px-2 py-0.5 bg-emerald-50 text-emerald-700 rounded text-xs font-semibold">${row.jenis_faskes}</span></td>
+                                <td class="p-4 text-slate-500">${row.alamat}</td>
+                                <td class="p-4 text-center">
+                                    <span class="px-2.5 py-1 bg-blue-100 text-blue-800 font-mono rounded text-xs font-bold shadow-xs border border-blue-200">
+                                        ${row.sumber}
+                                    </span>
+                                </td>
+                            </tr>
+                        `;
+            });
+          } else {
+            tableBody.innerHTML = `<tr><td colspan="5" class="p-8 text-center text-slate-400">Gagal mengambil data eksternal faskes.</td></tr>`;
+          }
+        } catch (error) {
+          document.getElementById("faskes-table-body").innerHTML =
+            `<tr><td colspan="5" class="p-8 text-center text-red-500 font-semibold">Gagal melakukan handshake dengan RESTful Third-Party API Gateway.</td></tr>`;
+        }
+      }
+
+      fetchFaskes();
+
+      document
+        .getElementById("logoutBtn")
+        .addEventListener("click", function () {
+          localStorage.clear();
+          window.location.href = "login.html";
+        });
+    </script>
+  </body>
+</html>

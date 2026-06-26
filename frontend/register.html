@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="id">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Daftar Akun - Portal Kesehatan</title>
+    <!-- Menggunakan Tailwind CSS agar desainnya serasi dengan halaman login kamu -->
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+  </head>
+  <body class="bg-gray-100 flex items-center justify-center min-h-screen">
+    <div class="bg-white p-8 rounded-2xl shadow-md w-full max-w-md mx-4">
+      <!-- Ikon dan Judul -->
+      <div class="flex flex-col items-center mb-6">
+        <div class="bg-teal-100 p-3 rounded-xl mb-3">
+          <svg
+            class="w-8 h-8 text-teal-600"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+            ></path>
+          </svg>
+        </div>
+        <h2 class="text-2xl font-bold text-gray-800">Daftar Akun Baru</h2>
+      </div>
+
+      <!-- Notifikasi Status -->
+      <div
+        id="alert-box"
+        class="hidden p-3 rounded-lg mb-4 text-sm text-center"
+      ></div>
+
+      <!-- Form Pendaftaran -->
+      <form id="register-form" class="space-y-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Nama Lengkap</label
+          >
+          <input
+            type="text"
+            id="name"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"
+            placeholder="Masukkan nama lengkap"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Alamat Email</label
+          >
+          <input
+            type="email"
+            id="email"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"
+            placeholder="contoh@gmail.com"
+          />
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1"
+            >Kata Sandi</label
+          >
+          <input
+            type="password"
+            id="password"
+            required
+            class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-teal-500 focus:outline-none text-sm"
+            placeholder="Minimal 6 karakter"
+          />
+        </div>
+
+        <button
+          type="submit"
+          class="w-full bg-teal-700 hover:bg-teal-800 text-white font-medium py-2 rounded-lg transition duration-200 text-sm mt-2 cursor-pointer"
+        >
+          Daftar Sekarang
+        </button>
+      </form>
+
+      <!-- Link Kembali Ke Login -->
+      <div class="text-center mt-6 text-sm text-gray-600">
+        Sudah punya akun?
+        <a href="login.html" class="text-teal-600 hover:underline font-medium"
+          >Masuk di sini</a
+        >
+      </div>
+    </div>
+
+    <!-- Logika Integrasi API Railway -->
+    <script>
+      document
+        .getElementById("register-form")
+        .addEventListener("submit", async (e) => {
+          e.preventDefault();
+
+          const name = document.getElementById("name").value;
+          const email = document.getElementById("email").value;
+          const password = document.getElementById("password").value;
+          const alertBox = document.getElementById("alert-box");
+
+          // Reset tampilan alert
+          alertBox.classList.add("hidden");
+
+          try {
+            // Mengarah langsung ke API Register Railway kamu yang sudah online
+            const response = await fetch(
+              "https://platformlayanankesehatandigital-production.up.railway.app/api/register",
+              {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  Accept: "application/json",
+                },
+                body: JSON.stringify({ name, email, password }),
+              },
+            );
+
+            const data = await response.json();
+
+            if (response.ok) {
+              alertBox.textContent =
+                "Pendaftaran berhasil! Mengalihkan ke halaman login...";
+              alertBox.className =
+                "p-3 rounded-lg mb-4 text-sm text-center bg-green-100 text-green-700 block";
+
+              // Tunggu 2 detik lalu pindah ke login.html
+              setTimeout(() => {
+                window.location.href = "login.html";
+              }, 2000);
+            } else {
+              // Menampilkan pesan error dari validasi Laravel backend
+              alertBox.textContent =
+                data.message || "Gagal mendaftarkan akun. Silakan coba lagi.";
+              alertBox.className =
+                "p-3 rounded-lg mb-4 text-sm text-center bg-red-100 text-red-700 block";
+            }
+          } catch (error) {
+            console.error("Error:", error);
+            alertBox.textContent = "Gagal terhubung ke server backend API.";
+            alertBox.className =
+              "p-3 rounded-lg mb-4 text-sm text-center bg-red-100 text-red-700 block";
+          }
+        });
+    </script>
+  </body>
+</html>
