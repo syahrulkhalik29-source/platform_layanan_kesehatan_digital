@@ -8,7 +8,14 @@
 
 **Jumlah Anggota:** `2` orang
 
-**Repositori:** `https://github.com/syahrulkhalik29-source/platform\_layanan\_kesehatan\_digital.git`
+#🔐 Akun Demo Pengujian (Untuk Dosen / Asdos)
+* **Email:** Admin@gmail.com
+* **Password:** 12345678
+
+#Link Akses Aplikasi (Live Website)
+* **Link Web:** `https://syahrulkhalik29-source.github.io/platform-layanan-kesehatan-frontend/login.html`
+
+**Repositori:** `https://github.com/syahrulkhalik29-source/platform_layanan_kesehatan_digital`
 
 \---
 
